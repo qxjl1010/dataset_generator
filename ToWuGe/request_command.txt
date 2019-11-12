@@ -1,0 +1,1 @@
+a = requests.get('http://172.16.13.119:8000/test_model?content=用眼过度会发眼内炎吗？眼内炎是否会不适？眼药水对眼内炎有效吗？&train_id=017a7ca0-4695-4c00-8e81-bfd15aa2ac9f&model_id=222')
