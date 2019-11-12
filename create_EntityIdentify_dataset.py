@@ -182,6 +182,7 @@ def create_tag1_list():
             if i == 0:
                 disease_rd = random.randint(0,len(disease_list)-1)
                 symptom_rd = random.randint(0,len(symptom_list)-1)
+                drug_rd = random.randint(0,len(drug_list)-1)
                 line_1 = line1[line1.index(')')+1:]
                 have_dis = [have_dis.start() for have_dis in re.finditer('DIS', line_1)]
                 
@@ -203,8 +204,19 @@ def create_tag1_list():
                         line2[have_spt[j]:have_spt[j]+1] = iter(spt)
                         # line2[have_spt[j]] = spt
                 
+                have_drug = [have_drug.start() for have_drug in re.finditer('MED', line_1)]
+                if len(have_drug) != 0:
+                    for j in range(len(have_drug)):
+                        med = []
+                        for k in range(len(drug_list[drug_rd])-2):
+                            med += ['I-M']
+                        med = ['B-M'] + med + ['E-M']
+                        line2[have_drug[j]:have_drug[j]+1] = iter(med)
+
+
                 inserted_q = line1[1:-1].replace('DIS',disease_list[disease_rd])
                 inserted_q = inserted_q.replace('SPT',symptom_list[symptom_rd])
+                inserted_q = inserted_q.replace('MED',drug_list[drug_rd])
                 jh_list.append(inserted_q)
                 
                 line_2 = ''
@@ -233,6 +245,7 @@ def create_tag1_list():
             else:
                 disease_rd = random.randint(0,len(disease_list)-1)
                 symptom_rd = random.randint(0,len(symptom_list)-1)
+                drug_rd = random.randint(0,len(drug_list)-1)
                 line_1 = line1[line1.index(')')+1:]
                 have_dis = [have_dis.start() for have_dis in re.finditer('DIS', line_1)]
                 if len(have_dis) != 0:
@@ -253,8 +266,17 @@ def create_tag1_list():
                         spt = ['B-S'] + spt + ['E-S']
                         line2[have_spt[j]:have_spt[j]+1] = iter(spt)
                         # line2[have_spt[j]] = spt
+                have_drug = [have_drug.start() for have_drug in re.finditer('MED', line_1)]
+                if len(have_drug) != 0:
+                    for j in range(len(have_drug)):
+                        med = []
+                        for k in range(len(drug_list[drug_rd])-2):
+                            med += ['I-M']
+                        med = ['B-M'] + med + ['E-M']
+                        line2[have_drug[j]:have_drug[j]+1] = iter(med)
                 inserted_q = line1[:-1].replace('DIS',disease_list[disease_rd])
                 inserted_q = inserted_q.replace('SPT',symptom_list[symptom_rd])
+                inserted_q = inserted_q.replace('MED',drug_list[drug_rd])
                 jh_list.append(inserted_q)
                 #jh_list_tag.append(line_2[:-1])
                 jh_list_tag.append(line2)
@@ -538,7 +560,16 @@ def create_tag1_list():
     for i in range(len(step_3_list)):
         rd = random.randint(1,10)
         if rd > 8:
-            if '(5-25)' in step_3_list[i]:
+            if '(0-5)' in step_3_list[i]:
+                rd_picked = random.randint(0,len(jh_0_5_list)-1)
+                step_4_list.append(jh_0_5_list[rd_picked] + '，' + step_3_list[i][5:])
+                tmp = []
+
+                tmp += jh_0_5_list_tag[rd_picked]
+                tmp += ['O']
+                tmp += step_3_list_tag[i]
+                step_4_list_tag.append(tmp)
+            elif '(5-25)' in step_3_list[i]:
                 rd_picked = random.randint(0,len(jh_5_25_list)-1)
                 step_4_list.append(jh_5_25_list[rd_picked] + '，' + step_3_list[i][6:])
                 tmp = []
@@ -646,14 +677,50 @@ def do_create_2hop(list1, list2, list1_tag, list2_tag):
     sentence_list = []
     return_tag_list = []
     for i in range(10):
+        '''
+        print("*******************************************")
+        print(list1)
+        print(list2)
+        print("*******************************************")
+        '''
         sent1 = random.randint(0,len(list1)-1)
         sent2 = random.randint(0,len(list2)-1)
         if [sent1, sent2] not in dataset_list:
             sentence = list1[sent1] + list2[sent2]
+            '''
+            print('=======================================================')
+            print(sent1)
+            print(sent2)
+            print('=======================================================')
+            '''
             tag = list1_tag[sent1] + list2_tag[sent2]
             dataset_list.append([sent1, sent2])
             sentence_list.append(sentence)
             return_tag_list.append(tag)
+            
+            if len(sentence) != len(tag):
+                
+                print('=======================================================')
+                print('list1:')
+                print(list1)
+                print(list1_tag)
+                print('list2:')
+                print(list2)
+                print(list2_tag)
+                print(sentence)
+                print(tag)
+                print('Q1:')
+                print(len(list1))
+                print(sent1)
+                print(list1[sent1])
+                print(list1_tag[sent1])
+                print('Q2:')
+                print(len(list2))
+                print(sent2)
+                print(list2[sent2])
+                print(list2_tag[sent2])
+                print('=======================================================')
+                
         else:
             continue
     return sentence_list, return_tag_list
@@ -673,6 +740,28 @@ def do_create_3hop(list1,list2,list3,list1_tag,list2_tag,list3_tag):
             sentence_list.append(sentence)
             dataset_list.append([sent1, sent2,sent3])
             return_tag_list.append(tag)
+            if len(sentence) != len(tag):
+                
+                print('=======================================================')
+                print('list1:')
+                print(list1)
+                print(list1_tag)
+                print('list2:')
+                print(list2)
+                print(list2_tag)
+                print(sentence)
+                print(tag)
+                print('Q1:')
+                print(len(list1))
+                print(sent1)
+                print(list1[sent1])
+                print(list1_tag[sent1])
+                print('Q2:')
+                print(len(list2))
+                print(sent2)
+                print(list2[sent2])
+                print(list2_tag[sent2])
+                print('=======================================================')
         else:
             continue
     return sentence_list, return_tag_list
@@ -930,16 +1019,10 @@ def create_file():
                
                 Huanbingqingxiang_list.append(line[:-1])
     with open('parts/parts_Huanbingqingxiang/label_Huanbingqingxiang_q_tag.txt','r',encoding='utf-8') as infile:
-        i = 0
+        
         for line in infile:
-            
-            if i == 0:
-                tmp = line[1:-1].split(',')
-                Huanbingqingxiang_list_tag.append(tmp)
-                i+= 1
-            else:
-                tmp = line[:-1].split(',')
-                Huanbingqingxiang_list_tag.append(tmp)
+            tmp = line[:-1].split(',')
+            Huanbingqingxiang_list_tag.append(tmp)
     
     for i,line2 in zip(range(len(Huanbingqingxiang_list)), Huanbingqingxiang_list_tag):
         if 'DIS' in Huanbingqingxiang_list[i]:
@@ -1149,13 +1232,13 @@ def create_file():
     # 2-hop
     for i in range(150):
         for j in range(11-i-1):
-
-            s,l = do_create_2hop(label_vec[i], label_vec[11-j-2], label_vec_tag[i], label_vec_tag[11-j-2])
-            dataset += s
-            label += l
-            s,l = do_create_2hop(label_vec[11-j-2], label_vec[i], label_vec_tag[11-j-2], label_vec_tag[i])
-            dataset += s
-            label += l
+            if i != 11-j-2:
+                s,l = do_create_2hop(label_vec[i], label_vec[11-j-2], label_vec_tag[i], label_vec_tag[11-j-2])
+                dataset += s
+                label += l
+                s,l = do_create_2hop(label_vec[11-j-2], label_vec[i], label_vec_tag[11-j-2], label_vec_tag[i])
+                dataset += s
+                label += l
 
             
     
